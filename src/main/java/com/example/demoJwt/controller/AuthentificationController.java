@@ -1,37 +1,54 @@
 package com.example.demoJwt.controller;
 
-import com.example.demoJwt.entity.User;
+import com.example.demoJwt.config.AuthentificationRequest;
+import com.example.demoJwt.config.AuthentificationResponse;
+import com.example.demoJwt.entity.UserDAO;
 import com.example.demoJwt.service.AuthentificationService;
-import com.example.demoJwt.service.UserService;
+import com.example.demoJwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/authentification")
 @RequiredArgsConstructor
 public class AuthentificationController {
     private final AuthentificationService authentificationService;
 
-    @PostMapping
-    public ResponseEntity<?> post(HttpServletRequest request, @RequestBody @Valid User user){
-        User userFound = authentificationService.authentificate(user);
-        if (userFound != null){
-            userFound.setPassword(null);
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(userFound);
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    UserDetailsService userDetailsService;
+    @Autowired
+    JwtUtil jwtUtil;
+
+
+    @RequestMapping(value = "/authentification", method = RequestMethod.POST)
+    public ResponseEntity<?> createAuthentificationToken(HttpServletRequest request, @RequestBody @Valid AuthentificationRequest authentificationRequest) throws Exception {
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authentificationRequest.getMail(), authentificationRequest.getPassword()));
+        }catch (BadCredentialsException e){
+            throw new Exception("Incorrect mail or password", e);
         }
-        return ResponseEntity
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authentificationRequest.getMail());
+
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(new AuthentificationResponse(jwt));
+
+      /*  return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body("User NOT Found");
+                .body("User NOT Found");*/
     }
 
 }

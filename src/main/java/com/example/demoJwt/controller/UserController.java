@@ -1,6 +1,6 @@
 package com.example.demoJwt.controller;
 
-import com.example.demoJwt.entity.User;
+import com.example.demoJwt.entity.UserDAO;
 import com.example.demoJwt.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> post(HttpServletRequest request, @RequestBody @Valid User user){
+    public ResponseEntity<?> post(HttpServletRequest request, @RequestBody @Valid UserDAO user){
         Long userId = userService.add(user).getId();
         return ResponseEntity
                 .status(HttpStatus.CREATED)
