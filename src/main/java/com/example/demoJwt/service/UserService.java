@@ -1,9 +1,12 @@
 package com.example.demoJwt.service;
 
+
 import com.example.demoJwt.entity.UserDAO;
 import com.example.demoJwt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -12,6 +15,10 @@ public class UserService {
 
     public UserDAO add(UserDAO user) {
         return userRepository.save(user);
+    }
+
+    public List<UserDAO> getUsers(){
+        return userRepository.findAll();
     }
 
     public UserDAO getByMail(String mail) {
