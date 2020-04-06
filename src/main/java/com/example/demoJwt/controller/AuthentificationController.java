@@ -22,7 +22,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 public class AuthentificationController {
-    private final AuthentificationService authentificationService;
+    private final AuthentificationService authentificationService; //????????????????????????????
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -44,11 +44,8 @@ public class AuthentificationController {
 
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthentificationResponse(jwt));
+        return ResponseEntity.ok(new AuthentificationResponse(jwt) + userDetails.toString());
 
-      /*  return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body("User NOT Found");*/
     }
 
 }

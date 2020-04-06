@@ -21,9 +21,4 @@ public class AuthentificationService implements UserDetailsService {
         UserDAO user = userRepository.findByMail(userMail);
         return new User(user.getMail(), user.getPassword(), new ArrayList<>());
     }
-
-    public UserDAO authentificate(UserDAO user) {
-        return  userRepository.findUserByMailAndPassword(user.getMail(), user.getPassword());
-    }
-
 }
